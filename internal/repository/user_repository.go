@@ -38,10 +38,7 @@ func (r *UserRepository) FindByID(id string) (*model.User, error) {
 func (r *UserRepository) FindUserWithAssociationsAndRoles(userID string) (*model.User, error) {
 	var user model.User
 	result := r.db.
-		Preload("UserAssociationRoles").
-		Preload("UserAssociationRoles.Association").
-		Preload("UserAssociationRoles.Role").
-		Preload("UserAssociationRoles.Role.Permissions").
+		Preload("Interviews").
 		Where("id = ?", userID).
 		First(&user)
 
