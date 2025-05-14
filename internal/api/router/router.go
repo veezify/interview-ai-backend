@@ -12,6 +12,8 @@ import (
 
 func SetupRouter(
 	authService *service.AuthService,
+	interviewService *service.InterviewService,
+	userService *service.UserService,
 ) *gin.Engine {
 	r := gin.Default()
 
@@ -20,6 +22,7 @@ func SetupRouter(
 	r.Use(middleware.CORS())
 
 	authHandler := handler.NewAuthHandler(authService)
+	interviewHandler := handler.NewInterviewHandler(interviewService, userService)
 
 	public := r.Group("/api")
 	{
@@ -35,18 +38,13 @@ func SetupRouter(
 
 		protected.GET("/me", authHandler.GetMe)
 
-		//associations := protected.Group("/associations")
-		//{
-		//
-		//	associations.GET("")
-		//
-		//	association := associations.Group("/:associationID")
-		//	{
-		//
-		//		association.GET("", middleware.HasPermission("view_association"))
-		//		association.PUT("", middleware.HasPermission("edit_association"))
-		//	}
-		//}
+		interviews := protected.Group("/interviews")
+		{
+			interviews.GET("/options", interviewHandler.GetSelectOptions)
+			interviews.POST("", interviewHandler.CreateInterview)
+			interviews.GET("", interviewHandler.ListInterviews)
+			interviews.GET("/:id", interviewHandler.GetInterview)
+		}
 	}
 
 	return r

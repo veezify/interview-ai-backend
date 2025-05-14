@@ -1,98 +1,62 @@
 package repository
 
 import (
-	"errors"
-	"time"
-
 	"github.com/veezify/interview-ai-backend/internal/domain/model"
 	"gorm.io/gorm"
 )
 
-type InterviewRepository struct {
+type InterviewRepository interface {
+	CreateInterview(interview model.Interview) (*model.Interview, error)
+	GetInterviewByID(id string) (*model.Interview, error)
+	ListInterviewsByUserID(userID string) ([]model.Interview, error)
+	UpdateInterview(interview model.Interview) (*model.Interview, error)
+	DeleteInterview(id string) error
+}
+
+type interviewRepository struct {
 	db *gorm.DB
 }
 
-func NewInterviewRepository(db *gorm.DB) *InterviewRepository {
-	return &InterviewRepository{db: db}
+// NewInterviewRepository creează o nouă instanță a repository-ului
+func NewInterviewRepository(db *gorm.DB) InterviewRepository {
+	return &interviewRepository{db: db}
 }
 
-func (r *InterviewRepository) Create(interview *model.Interview) error {
-	return r.db.Create(interview).Error
-}
-
-func (r *InterviewRepository) FindByID(id string) (*model.Interview, error) {
-	var interview model.Interview
-	result := r.db.Where("id = ?", id).First(&interview)
-	if result.Error != nil {
-		return nil, result.Error
+// CreateInterview creează un nou interviu în baza de date
+func (r *interviewRepository) CreateInterview(interview model.Interview) (*model.Interview, error) {
+	if err := r.db.Create(&interview).Error; err != nil {
+		return nil, err
 	}
 	return &interview, nil
 }
 
-func (r *InterviewRepository) FindByIDWithRelations(id string) (*model.Interview, error) {
+// GetInterviewByID preia un interviu după ID
+func (r *interviewRepository) GetInterviewByID(id string) (*model.Interview, error) {
 	var interview model.Interview
-	result := r.db.
-		Preload("User").
-		Preload("Questions").
-		Preload("Responses").
-		Preload("Feedback").
-		Where("id = ?", id).
-		First(&interview)
-
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, errors.New("interview not found")
-		}
-		return nil, result.Error
+	if err := r.db.First(&interview, "id = ?", id).Error; err != nil {
+		return nil, err
 	}
-
 	return &interview, nil
 }
 
-func (r *InterviewRepository) FindByUserID(userID string) ([]model.Interview, error) {
+// ListInterviewsByUserID listează toate interviurile unui utilizator
+func (r *interviewRepository) ListInterviewsByUserID(userID string) ([]model.Interview, error) {
 	var interviews []model.Interview
-	result := r.db.
-		Where("user_id = ?", userID).
-		Order("created_at DESC").
-		Find(&interviews)
-
-	if result.Error != nil {
-		return nil, result.Error
+	if err := r.db.Where("user_id = ?", userID).Find(&interviews).Error; err != nil {
+		return nil, err
 	}
-
 	return interviews, nil
 }
 
-func (r *InterviewRepository) Update(interview *model.Interview) error {
-	return r.db.Save(interview).Error
-}
-
-func (r *InterviewRepository) UpdateFields(id string, fields map[string]interface{}) error {
-	// Adaugă câmpul updated_at
-	fields["updated_at"] = time.Now()
-
-	return r.db.Model(&model.Interview{}).
-		Where("id = ?", id).
-		Updates(fields).Error
-}
-
-func (r *InterviewRepository) Delete(id string) error {
-	return r.db.Delete(&model.Interview{}, id).Error
-}
-
-func (r *InterviewRepository) Exists(id string) (bool, error) {
-	var count int64
-	err := r.db.Model(&model.Interview{}).
-		Where("id = ?", id).
-		Count(&count).Error
-
-	if err != nil {
-		return false, err
+// UpdateInterview actualizează un interviu
+func (r *interviewRepository) UpdateInterview(interview model.Interview) (*model.Interview, error) {
+	if err := r.db.Save(&interview).Error; err != nil {
+		return nil, err
 	}
-
-	return count > 0, nil
+	return &interview, nil
 }
 
-func (r *InterviewRepository) Transaction(fn func(tx *gorm.DB) error) error {
-	return r.db.Transaction(fn)
+// DeleteInterview șterge un interviu (soft delete cu GORM)
+func (r *interviewRepository) DeleteInterview(id string) error {
+	return r.db.Delete(&model.Interview{}, "id = ?", id).Error
 }

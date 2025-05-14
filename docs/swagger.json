@@ -74,6 +74,266 @@
                 }
             }
         },
+        "/interviews": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get a list of all interviews for the current user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "interviews"
+                ],
+                "summary": "List user interviews",
+                "responses": {
+                    "200": {
+                        "description": "List of interviews",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Interview"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new interview with the specified parameters",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "interviews"
+                ],
+                "summary": "Create a new interview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Experience level (e.g., JUNIOR, MIDDLE, SENIOR)",
+                        "name": "level",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Job type (e.g., BACKEND, FRONTEND)",
+                        "name": "jobType",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Programming languages array as JSON string",
+                        "name": "programmingLanguages",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Interview language (e.g., ENGLISH)",
+                        "name": "interviewLanguage",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Country (e.g., US, UK)",
+                        "name": "country",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Interview type (e.g., TECHNICAL, BEHAVIORAL)",
+                        "name": "interviewType",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Interview stage (e.g., SCREENING, FINAL)",
+                        "name": "stage",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Job description text",
+                        "name": "jobDescription",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Interview mode (e.g., TEXT_WITH_VOICE)",
+                        "name": "mode",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "CV/Resume file (PDF or DOCX)",
+                        "name": "cv",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully created interview",
+                        "schema": {
+                            "$ref": "#/definitions/response.CreateInterviewResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/interviews/options": {
+            "get": {
+                "description": "Returns lists of options for dropdowns including countries, levels, languages, and programming languages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "options"
+                ],
+                "summary": "Get selection options",
+                "responses": {
+                    "200": {
+                        "description": "List of options for dropdowns",
+                        "schema": {
+                            "$ref": "#/definitions/response.SelectOptionsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/interviews/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get detailed information about an interview",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "interviews"
+                ],
+                "summary": "Get interview details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Interview ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Interview details",
+                        "schema": {
+                            "$ref": "#/definitions/model.Interview"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Interview not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "security": [
@@ -204,6 +464,7 @@
                     "type": "string"
                 },
                 "interview_language": {
+                    "description": "ProgrammingLanguages array of strings\nswagger:allOf\nProgrammingLanguages []string `json:\"programming_languages\"`",
                     "type": "string"
                 },
                 "interview_type": {
@@ -404,6 +665,14 @@
                 }
             }
         },
+        "response.CreateInterviewResponse": {
+            "type": "object",
+            "properties": {
+                "interviewId": {
+                    "type": "string"
+                }
+            }
+        },
         "response.LoginResponse": {
             "type": "object",
             "properties": {
@@ -417,6 +686,64 @@
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
+                }
+            }
+        },
+        "response.SelectOption": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SelectOptionsResponse": {
+            "type": "object",
+            "properties": {
+                "countries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "interviewTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "jobTypes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "languages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "levels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "programmingLanguages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.SelectOption"
+                    }
                 }
             }
         }

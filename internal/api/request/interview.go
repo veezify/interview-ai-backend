@@ -1,19 +1,21 @@
 package request
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type CreateInterviewRequest struct {
-	Level                string   `json:"level"`
-	JobType              string   `json:"job_type"`
-	ProgrammingLanguages []string `json:"programming_languages"`
-	InterviewLanguage    string   `json:"interview_language"`
-	Country              string   `json:"country"`
-	InterviewType        string   `json:"interview_type"`
-	Stage                string   `json:"stage"`
-	JobDescription       string   `json:"job_description"`
-	CvURL                string   `json:"cv_url"`
-	UserID               string   `json:"user_id"`
-	Mode                 string   `json:"mode"`
+	Level                string                `json:"level" form:"level" binding:"required" example:"junior"`
+	JobType              string                `json:"jobType" form:"jobType" binding:"required" example:"backend"`
+	ProgrammingLanguages []string              `json:"programmingLanguages" form:"programmingLanguages" binding:"required" example:"[\"go\",\"java\"]"`
+	InterviewLanguage    string                `json:"interviewLanguage" form:"interviewLanguage" binding:"required" example:"en"`
+	Country              string                `json:"country" form:"country" binding:"required" example:"US"`
+	InterviewType        string                `json:"interviewType" form:"interviewType" binding:"required" example:"technical"`
+	Stage                string                `json:"stage" form:"stage" binding:"required" example:"screening"`
+	JobDescription       string                `json:"jobDescription" form:"jobDescription" binding:"required" example:"We are looking for a backend developer..."`
+	Mode                 string                `json:"mode" form:"mode" binding:"required" example:"voice"`
+	CV                   *multipart.FileHeader `form:"cv" swaggerignore:"true"`
 }
 
 type UpdateInterviewRequest struct {

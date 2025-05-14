@@ -60,6 +60,10 @@ definitions:
       id:
         type: string
       interview_language:
+        description: |-
+          ProgrammingLanguages array of strings
+          swagger:allOf
+          ProgrammingLanguages []string `json:"programming_languages"`
         type: string
       interview_type:
         type: string
@@ -192,6 +196,11 @@ definitions:
     - email
     - password
     type: object
+  response.CreateInterviewResponse:
+    properties:
+      interviewId:
+        type: string
+    type: object
   response.LoginResponse:
     properties:
       expires_at:
@@ -202,6 +211,44 @@ definitions:
         type: string
       user:
         $ref: '#/definitions/model.User'
+    type: object
+  response.SelectOption:
+    properties:
+      label:
+        type: string
+      value:
+        type: string
+    type: object
+  response.SelectOptionsResponse:
+    properties:
+      countries:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      interviewTypes:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      jobTypes:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      languages:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      levels:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      programmingLanguages:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
+      stages:
+        items:
+          $ref: '#/definitions/response.SelectOption'
+        type: array
     type: object
 host: localhost:8080
 info:
@@ -251,6 +298,178 @@ paths:
       summary: User login
       tags:
       - auth
+  /interviews:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all interviews for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of interviews
+          schema:
+            items:
+              $ref: '#/definitions/model.Interview'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: List user interviews
+      tags:
+      - interviews
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new interview with the specified parameters
+      parameters:
+      - description: Experience level (e.g., JUNIOR, MIDDLE, SENIOR)
+        in: formData
+        name: level
+        required: true
+        type: string
+      - description: Job type (e.g., BACKEND, FRONTEND)
+        in: formData
+        name: jobType
+        required: true
+        type: string
+      - description: Programming languages array as JSON string
+        in: formData
+        name: programmingLanguages
+        required: true
+        type: string
+      - description: Interview language (e.g., ENGLISH)
+        in: formData
+        name: interviewLanguage
+        required: true
+        type: string
+      - description: Country (e.g., US, UK)
+        in: formData
+        name: country
+        required: true
+        type: string
+      - description: Interview type (e.g., TECHNICAL, BEHAVIORAL)
+        in: formData
+        name: interviewType
+        required: true
+        type: string
+      - description: Interview stage (e.g., SCREENING, FINAL)
+        in: formData
+        name: stage
+        required: true
+        type: string
+      - description: Job description text
+        in: formData
+        name: jobDescription
+        required: true
+        type: string
+      - description: Interview mode (e.g., TEXT_WITH_VOICE)
+        in: formData
+        name: mode
+        required: true
+        type: string
+      - description: CV/Resume file (PDF or DOCX)
+        in: formData
+        name: cv
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created interview
+          schema:
+            $ref: '#/definitions/response.CreateInterviewResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new interview
+      tags:
+      - interviews
+  /interviews/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed information about an interview
+      parameters:
+      - description: Interview ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Interview details
+          schema:
+            $ref: '#/definitions/model.Interview'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Interview not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get interview details
+      tags:
+      - interviews
+  /interviews/options:
+    get:
+      consumes:
+      - application/json
+      description: Returns lists of options for dropdowns including countries, levels,
+        languages, and programming languages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of options for dropdowns
+          schema:
+            $ref: '#/definitions/response.SelectOptionsResponse'
+      summary: Get selection options
+      tags:
+      - options
   /me:
     get:
       consumes:

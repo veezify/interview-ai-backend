@@ -61,9 +61,13 @@ func main() {
 	}
 
 	userRepo := repository.NewUserRepository(db)
-	authService := service.NewAuthService(userRepo)
+	interviewRepo := repository.NewInterviewRepository(db)
 
-	r := router.SetupRouter(authService)
+	authService := service.NewAuthService(userRepo)
+	interviewService := service.NewInterviewService(interviewRepo, "uploads/cv")
+	userService := service.NewUserService(userRepo)
+
+	r := router.SetupRouter(authService, interviewService, userService)
 
 	r.Use(middleware.Logger())
 
