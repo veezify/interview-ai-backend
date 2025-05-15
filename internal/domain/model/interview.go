@@ -1,9 +1,8 @@
 package model
 
 import (
-	// pq.StringArray pentru producție
-	//swaggerignore:start
 	"github.com/lib/pq"
+	//swaggerignore:start
 	//swaggerignore:end
 	"gorm.io/gorm"
 	"time"
@@ -15,6 +14,7 @@ type Interview struct {
 	JobType string `json:"job_type"`
 	//swaggerignore:start
 	ProgrammingLanguages pq.StringArray `gorm:"type:text[]" json:"programming_languages"`
+	//ProgrammingLanguages []string `gorm:"type:text[]" json:"programming_languages"`
 	//swaggerignore:end
 
 	//swagger:include

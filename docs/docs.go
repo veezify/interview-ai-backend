@@ -336,6 +336,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/livekit/token": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Generate a LiveKit JWT token for connecting to a room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "livekit"
+                ],
+                "summary": "Generate LiveKit token",
+                "parameters": [
+                    {
+                        "description": "Room and identity information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.GenerateLivekitTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a JWT token",
+                        "schema": {
+                            "$ref": "#/definitions/response.GenerateLivekitTokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "security": [
@@ -485,6 +542,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "programming_languages": {
+                    "description": "ProgrammingLanguages pq.StringArray ` + "`" + `gorm:\"type:text[]\" json:\"programming_languages\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -652,6 +710,23 @@ const docTemplate = `{
                 }
             }
         },
+        "request.GenerateLivekitTokenRequest": {
+            "type": "object",
+            "required": [
+                "identity",
+                "room"
+            ],
+            "properties": {
+                "identity": {
+                    "type": "string",
+                    "example": "userId-uuid"
+                },
+                "room": {
+                    "type": "string",
+                    "example": "interview-id-uuid"
+                }
+            }
+        },
         "request.LoginRequest": {
             "type": "object",
             "required": [
@@ -672,6 +747,15 @@ const docTemplate = `{
             "properties": {
                 "interviewId": {
                     "type": "string"
+                }
+            }
+        },
+        "response.GenerateLivekitTokenResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                 }
             }
         },

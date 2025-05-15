@@ -76,6 +76,7 @@ definitions:
       mode:
         type: string
       programming_languages:
+        description: ProgrammingLanguages pq.StringArray `gorm:"type:text[]" json:"programming_languages"`
         items:
           type: string
         type: array
@@ -186,6 +187,18 @@ definitions:
       updated_at:
         type: string
     type: object
+  request.GenerateLivekitTokenRequest:
+    properties:
+      identity:
+        example: userId-uuid
+        type: string
+      room:
+        example: interview-id-uuid
+        type: string
+    required:
+    - identity
+    - room
+    type: object
   request.LoginRequest:
     properties:
       email:
@@ -199,6 +212,12 @@ definitions:
   response.CreateInterviewResponse:
     properties:
       interviewId:
+        type: string
+    type: object
+  response.GenerateLivekitTokenResponse:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
     type: object
   response.LoginResponse:
@@ -470,6 +489,42 @@ paths:
       summary: Get selection options
       tags:
       - options
+  /livekit/token:
+    post:
+      consumes:
+      - application/json
+      description: Generate a LiveKit JWT token for connecting to a room
+      parameters:
+      - description: Room and identity information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GenerateLivekitTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns a JWT token
+          schema:
+            $ref: '#/definitions/response.GenerateLivekitTokenResponse'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Generate LiveKit token
+      tags:
+      - livekit
   /me:
     get:
       consumes:

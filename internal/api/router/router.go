@@ -23,6 +23,7 @@ func SetupRouter(
 
 	authHandler := handler.NewAuthHandler(authService)
 	interviewHandler := handler.NewInterviewHandler(interviewService, userService)
+	livekitAuthHandler := handler.NewAuthLivekitHandler()
 
 	public := r.Group("/api")
 	{
@@ -35,6 +36,11 @@ func SetupRouter(
 	protected := r.Group("/api")
 	protected.Use(middleware.AuthMiddleware(authService))
 	{
+
+		livekit := protected.Group("/livekit")
+		{
+			livekit.POST("/token", livekitAuthHandler.GenerateLivekitToken)
+		}
 
 		protected.GET("/me", authHandler.GetMe)
 
